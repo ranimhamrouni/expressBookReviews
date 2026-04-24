@@ -57,27 +57,31 @@ public_users.get('/isbn/:isbn', async function (req, res) {
 public_users.get('/author/:author', async function (req,res) {
   try {
     const author = req.params.author;
-    const getBook = new Promise((resolve,reject) => {
+    const getBooks = new Promise((resolve,reject) => {
       bookList = Object.values(books).filter((book) => book.author === author);
       if(bookList.length>0) resolve(bookList);
-      else reject("Unable to find books");
+      else reject("Unable to find books with named author");
     }) 
-    const data = await getBook;
+    const data = await getBooks;
     res.send(JSON.stringify(data,null,4));
   } catch(err) {
-      res.status(500).json({message:"Error fetching book"});
+      res.status(500).json({message:"Error fetching books"});
   }
 })
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  const title = req.params.title;
-  let bookList =  Object.values(books);
-  bookList = bookList.filter(book => book.title === title);
-  if(bookList.length > 0){
-    res.send(JSON.stringify(bookList,null,4));
-  } else {
-    res.send("No books found for the given title");
+public_users.get('/title/:title', async function (req, res) {
+  try {
+    const title = req.params.title;
+    const getBooks = new Promise((resolve,reject) => {
+      let bookList = Object.values(books).filter((book) => book.title === title);
+      if(bookList.length>0) resolve(bookList);
+      else reject("Unable to find books with named title");
+    })
+    const data = await getBooks;
+    res.send(JSON.stringify(data,null,4));
+  } catch(err) {
+    res.status(500).json({message:"Error fetching books"});
   }
 });
 
